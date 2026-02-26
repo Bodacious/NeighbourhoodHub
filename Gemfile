@@ -41,6 +41,8 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  gem "annotate"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
@@ -59,6 +61,7 @@ group :development, :test do
   gem "guard-rails", "~> 0.8.1"
   gem "guard-rubocop"
   gem "guard-rake"
+
 end
 
 group :development do
@@ -71,3 +74,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "bcrypt", "~> 3.1"
+
+gem "jwt", "~> 3.1"

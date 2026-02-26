@@ -1,29 +1,153 @@
+<%# app/views/layouts/application.html.erb %>
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Neighbourhood Hub" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Neighbourhood Hub">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<html lang="en-GB">
+<head>
+  <title><%= content_for?(:title) ? yield(:title) : "NeighbourhoodHub" %></title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-param" content="<%= request_forgery_protection_token %>" />
+  <meta name="csrf-token" content="<%= form_authenticity_token %>" />
 
-    <%= yield :head %>
+  <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "NeighbourhoodHub: marketplace, events, bookings, and messaging for your local community." %>" />
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+  <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+</head>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+<body class="app">
+<a href="#main" class="app__skip-link">
+  Skip to content
+</a>
 
-  <body>
-    <%= yield %>
-  </body>
+<header class="app-header">
+  <div class="app-header__container">
+    <div class="app-header__bar">
+      <div class="app-header__brand">
+        <%= link_to "NeighbourhoodHub", root_path, class: "app-header__brand-link" %>
+
+        <nav aria-label="Primary" class="app-header__nav app-header__nav--desktop">
+          <ul class="app-header__nav-list">
+            <li class="app-header__nav-item"><%= link_to "Marketplace", marketplace_listings_path, class: "app-header__nav-link" %></li>
+            <li class="app-header__nav-item"><%= link_to "Events", events_path, class: "app-header__nav-link" %></li>
+            <li class="app-header__nav-item"><%= link_to "Bookings", bookings_path, class: "app-header__nav-link" %></li>
+            <li class="app-header__nav-item"><%= link_to "Messages", messaging_threads_path, class: "app-header__nav-link" %></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="app-header__actions">
+        <%= form_with url: search_path, method: :get, class: "search search--header", local: true do |f| %>
+          <%= f.label :q, "Search", class: "search__label" %>
+          <%= f.search_field :q, value: params[:q], placeholder: "Search", class: "search__field" %>
+          <%= f.submit "Go", class: "button button--primary button--compact" %>
+        <% end %>
+
+        <%# Assumes a `current_user` helper and Identity routes %>
+        <% if respond_to?(:current_user) && current_user.present? %>
+          <%= link_to "Profile", identity_profile_path, class: "button button--ghost button--compact" %>
+          <%= button_to "Sign out", identity_session_path, method: :delete, class: "button button--primary button--compact" %>
+        <% else %>
+          <%= link_to "Sign in", new_identity_session_path, class: "button button--ghost button--compact" %>
+          <%= link_to "Create account", new_registration_path, class: "button button--primary button--compact" %>
+        <% end %>
+      </div>
+    </div>
+
+    <nav aria-label="Primary mobile" class="app-header__nav app-header__nav--mobile">
+      <ul class="app-header__nav-list">
+        <li class="app-header__nav-item"><%= link_to "Marketplace", marketplace_listings_path, class: "app-header__nav-link" %></li>
+        <li class="app-header__nav-item"><%= link_to "Events", events_path, class: "app-header__nav-link" %></li>
+        <li class="app-header__nav-item"><%= link_to "Bookings", bookings_path, class: "app-header__nav-link" %></li>
+        <li class="app-header__nav-item"><%= link_to "Messages", messaging_threads_path, class: "app-header__nav-link" %></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="app__container">
+  <%# Flash messages %>
+  <% flash.each do |key, message| %>
+    <% next if message.blank? %>
+    <div class="flash flash--<%= key.to_s == "notice" ? "notice" : "alert" %>">
+      <div class="flash__content"><%= message %></div>
+    </div>
+  <% end %>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <section class="card">
+        <header class="card__header">
+          <h2 class="card__title">Quick links</h2>
+        </header>
+
+        <div class="card__body">
+          <ul class="list list--stack">
+            <li class="list__item"><%= link_to "Post a listing", new_marketplace_listing_path, class: "link link--block" %></li>
+            <li class="list__item"><%= link_to "Create an event", new_event_path, class: "link link--block" %></li>
+            <li class="list__item"><%= link_to "Book a resource", new_booking_path, class: "link link--block" %></li>
+            <li class="list__item"><%= link_to "Start a message", new_messaging_thread_path, class: "link link--block" %></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card card--spaced">
+        <header class="card__header">
+          <h2 class="card__title">Account</h2>
+        </header>
+
+        <div class="card__body">
+          <ul class="list list--stack">
+            <% if respond_to?(:current_user) && current_user.present? %>
+              <li class="list__item"><%= link_to "Settings", identity_settings_path, class: "link link--block" %></li>
+              <li class="list__item"><%= link_to "Notifications", identity_notification_preferences_path, class: "link link--block" %></li>
+            <% else %>
+              <li class="list__item"><%= link_to "Sign in", new_identity_session_path, class: "link link--block" %></li>
+            <% end %>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card card--spaced">
+        <header class="card__header">
+          <h2 class="card__title">Neighbourhood</h2>
+        </header>
+
+        <div class="card__body">
+          <p class="card__text">
+            Keep it local. Be respectful. Report problems.
+          </p>
+
+          <div class="card__actions">
+            <%= link_to "Guidelines", guidelines_path, class: "link" %>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <main id="main" class="app-layout__main">
+      <%= yield %>
+    </main>
+  </div>
+</div>
+
+<footer class="app-footer">
+  <div class="app-footer__container">
+    <div class="app-footer__bar">
+      <div class="app-footer__copyright">
+        &copy; <%= Time.current.year %> NeighbourhoodHub
+      </div>
+
+      <nav aria-label="Footer" class="app-footer__nav">
+        <ul class="app-footer__nav-list">
+          <li class="app-footer__nav-item"><%= link_to "Privacy", privacy_path, class: "app-footer__nav-link" %></li>
+          <li class="app-footer__nav-item"><%= link_to "Terms", terms_path, class: "app-footer__nav-link" %></li>
+          <li class="app-footer__nav-item"><%= link_to "Support", support_path, class: "app-footer__nav-link" %></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>
+</body>
 </html>
