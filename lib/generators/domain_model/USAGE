@@ -1,0 +1,9 @@
+Description:
+    Create a new domain model
+
+Example:
+    bin/rails generate domain_model Bar name:string --domain=foo
+
+    This will create:
+        app/domains/foo/models/bar.rb
+        db/migrations/create_foo_bars.rb

@@ -1,0 +1,9 @@
+Description:
+    Create a new domain module
+
+Example:
+    bin/rails generate domain FooBar
+
+    This will create:
+        app/domains/foo_bar.rb
+        app/domains/foo_bar/models

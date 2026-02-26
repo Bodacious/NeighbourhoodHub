@@ -1,0 +1,15 @@
+<% if options[:domain].present? -%>
+module <%= options[:domain].to_s.camelize %>
+class <%= class_name %> < ApplicationRecord
+<% attributes.each do |attribute| -%>
+    # attribute :<%= attribute.name %>, :<%= attribute.type %>
+<% end -%>
+  end
+end
+<% else -%>
+class <%= class_name %> < ApplicationRecord
+<% attributes.each do |attribute| -%>
+  # attribute :<%= attribute.name %>, :<%= attribute.type %>
+<% end -%>
+end
+<% end -%>
