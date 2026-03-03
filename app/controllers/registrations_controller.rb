@@ -1,6 +1,5 @@
 class RegistrationsController < ApplicationController
   def new
-
   end
   def create
     @user = Identification.register_user(

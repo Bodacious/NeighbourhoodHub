@@ -78,3 +78,7 @@ end
 gem "bcrypt", "~> 3.1"
 
 gem "jwt", "~> 3.1"
+
+gem "mocha", "~> 3.0"
+
+gem "factory_bot_rails", "~> 6.5"

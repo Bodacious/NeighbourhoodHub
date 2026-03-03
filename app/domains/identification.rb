@@ -10,7 +10,7 @@ module Identification
   # @return [Identification::User, nil]
   def authenticate_user(email:, password:)
     user = User.find_by_email(email)
-    user.authenticate(password)
+    user.try(:authenticate, password)
   end
 
   def register_user(email:, name:, password:, password_confirmation:)

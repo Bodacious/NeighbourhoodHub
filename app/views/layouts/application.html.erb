@@ -45,11 +45,11 @@
         <% end %>
 
         <%# Assumes a `current_user` helper and Identity routes %>
-        <% if respond_to?(:current_user) && current_user.present? %>
+        <% if signed_in?(:user) %>
           <%= link_to "Profile", identity_profile_path, class: "button button--ghost button--compact" %>
-          <%= button_to "Sign out", identity_session_path, method: :delete, class: "button button--primary button--compact" %>
+          <%= button_to "Sign out", sign_out_session_path, method: :post, class: "button button--primary button--compact" %>
         <% else %>
-          <%= link_to "Sign in", new_identity_session_path, class: "button button--ghost button--compact" %>
+          <%= link_to "Sign in", new_session_path, class: "button button--ghost button--compact" %>
           <%= link_to "Create account", new_registration_path, class: "button button--primary button--compact" %>
         <% end %>
       </div>

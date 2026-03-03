@@ -23,13 +23,15 @@ Rails.application.routes.draw do
     identity_session
     identity_settings
     identity_notification_preferences
+    new_password_reset
   ]
-    resources :registrations, only: [:new, :create]
-    resource :dashboard, only:[:show], controller: "dashboard"
-
     get "/", controller: 'dashboard', action: 'show', as: path_name
   end
 
-
-  root "dashboard#show"
+  resources :registrations, only: [:new, :create]
+  resource :session, only: [:new, :create] do
+    post "sign_out" => "sessions#destroy", as: :sign_out
+  end
+  resource :dashboard, only: [:show], controller: "dashboard"
+  root to: "dashboard#show"
 end
